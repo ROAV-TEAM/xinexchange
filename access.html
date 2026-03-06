@@ -209,19 +209,29 @@
 
             loginBtn.addEventListener('click', async () => {
                 const inputPass = adminPassword.value;
-                const { data, error } = await supabaseClient
-                    .from('app_config')
-                    .select('id')
-                    .eq('id', 1)
-                    .eq('admin_pass', inputPass)
-                    .single();
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('app_config')
+                        .select('admin_pass')
+                        .eq('id', 1)
+                        .single();
 
-                if (data) {
-                    sessionStorage.setItem('xinpay_admin_auth', 'true');
-                    sessionStorage.setItem('xinpay_admin_raw', inputPass);
-                    loginError.style.display = 'none';
-                    checkAuth();
-                } else {
+                    if (error) {
+                        console.error('DB Error:', error);
+                        loginError.style.display = 'block';
+                        return;
+                    }
+
+                    if (data && data.admin_pass === inputPass) {
+                        sessionStorage.setItem('xinpay_admin_auth', 'true');
+                        sessionStorage.setItem('xinpay_admin_raw', inputPass);
+                        loginError.style.display = 'none';
+                        checkAuth();
+                    } else {
+                        loginError.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('Login Error:', err);
                     loginError.style.display = 'block';
                 }
             });
