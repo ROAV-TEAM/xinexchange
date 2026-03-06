@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Panel - XINPAY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fill.css">
+    <style>
+        .admin-container {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(10, 1, 24, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: var(--radius-md);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-box.hidden {
+            display: none;
+        }
+
+        .dashboard-box.hidden {
+            display: none;
+        }
+
+        .dashboard-header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .dashboard-header h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        #loginError {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        #saveSuccess {
+            color: #22c55e;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Aurora Background -->
+    <div class="aurora-bg">
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+    </div>
+    <div class="noise-overlay"></div>
+
+    <div class="admin-container liquid-glass">
+        <!-- LOGIN SECTION -->
+        <div id="loginBox" class="login-box">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <i class="fas fa-lock" style="font-size: 2rem; color: #a855f7; margin-bottom: 10px;"></i>
+                <h2 style="font-weight: 800;">ADMIN LOGIN</h2>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="field-label">Password</label>
+                <input type="password" id="adminPassword" class="custom-input liquid-glass"
+                    placeholder="Enter Admin Password">
+            </div>
+            <button id="loginBtn" class="action-btn w-100"
+                style="width: 100%; padding: 12px; background: linear-gradient(135deg, #a855f7, #ec4899); border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer;">
+                Login
+            </button>
+            <div id="loginError">Invalid Password!</div>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboardBox" class="dashboard-box hidden">
+            <div class="dashboard-header">
+                <i class="fas fa-cog" style="font-size: 2rem; color: #a855f7; margin-bottom: 10px;"></i>
+                <h2>RATE MANAGEMENT</h2>
+                <p>Update payment options on fill.html</p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="field-label">Rate Option 1</label>
+                <input type="text" id="rate1" class="custom-input liquid-glass" placeholder="e.g. Rate : 105rs CDM">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="field-label">Rate Option 2</label>
+                <input type="text" id="rate2" class="custom-input liquid-glass" placeholder="e.g. 110rs IMPS & UPI">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="field-label">Rate Option 3</label>
+                <input type="text" id="rate3" class="custom-input liquid-glass"
+                    placeholder="e.g. 115rs UPI & IMPS (GAMING FUND)">
+            </div>
+
+            <div class="dashboard-header" style="margin-top: 2rem;">
+                <i class="fas fa-wallet" style="font-size: 2rem; color: #a855f7; margin-bottom: 10px;"></i>
+                <h2 style="font-size: 1rem;">WALLET MANAGEMENT</h2>
+                <p>Update network addresses</p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="field-label">BEP20 Address</label>
+                <input type="text" id="addrBep20" class="custom-input liquid-glass" placeholder="0x...">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="field-label">TRC20 Address</label>
+                <input type="text" id="addrTrc20" class="custom-input liquid-glass" placeholder="T...">
+            </div>
+
+            <button id="saveBtn" class="action-btn w-100"
+                style="width: 100%; padding: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer;">
+                Save Changes <i class="fas fa-save" style="margin-left: 5px;"></i>
+            </button>
+            <div id="saveSuccess">Rates updated successfully!</div>
+
+            <!-- CHAT MANAGEMENT SECTION -->
+            <div class="dashboard-header" style="margin-top: 2rem;">
+                <i class="fas fa-comments" style="font-size: 2rem; color: #a855f7; margin-bottom: 10px;"></i>
+                <h2 style="font-size: 1rem;">CHAT MANAGEMENT</h2>
+                <p>Manage wait.html sessions</p>
+            </div>
+
+            <a href="admin_chat.html" class="action-btn w-100"
+                style="margin-bottom: 1.5rem; text-align: center; text-decoration: none; display: inline-block; padding: 12px; background: linear-gradient(135deg, #0ea5e9, #2563eb); border-radius: 8px; color: white;">
+                Open Live Chat <i class="fas fa-external-link-alt" style="margin-left:5px;"></i>
+            </a>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="field-label">Global Toast Message</label>
+                <input type="text" id="toastMessageInput" class="custom-input liquid-glass"
+                    placeholder="e.g. Please wait, reviewing...">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="field-label">Toast Duration (seconds)</label>
+                <input type="number" id="toastDurationInput" class="custom-input liquid-glass" value="10">
+            </div>
+
+            <button id="saveChatBtn" class="action-btn w-100"
+                style="width: 100%; padding: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer;">
+                Save Chat Config
+            </button>
+            <div id="saveChatSuccess"
+                style="color: #22c55e; font-size: 0.8rem; margin-top: 10px; text-align: center; display: none;">Config
+                updated!</div>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <a href="index.html" class="back-link">Go to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK & Configuration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_client.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginBox = document.getElementById('loginBox');
+            const dashboardBox = document.getElementById('dashboardBox');
+            const adminPassword = document.getElementById('adminPassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+
+            const saveBtn = document.getElementById('saveBtn');
+            const saveSuccess = document.getElementById('saveSuccess');
+
+            const rate1Input = document.getElementById('rate1');
+            const rate2Input = document.getElementById('rate2');
+            const rate3Input = document.getElementById('rate3');
+
+            const addrBep20Input = document.getElementById('addrBep20');
+            const addrTrc20Input = document.getElementById('addrTrc20');
+
+            const toastMessageInput = document.getElementById('toastMessageInput');
+            const toastDurationInput = document.getElementById('toastDurationInput');
+            const saveChatBtn = document.getElementById('saveChatBtn');
+            const saveChatSuccess = document.getElementById('saveChatSuccess');
+
+            function checkAuth() {
+                if (sessionStorage.getItem('xinpay_admin_auth') === 'true') {
+                    loginBox.classList.add('hidden');
+                    dashboardBox.classList.remove('hidden');
+                    loadRates();
+                }
+            }
+
+            loginBtn.addEventListener('click', async () => {
+                const inputPass = adminPassword.value;
+                const { data, error } = await supabaseClient
+                    .from('app_config')
+                    .select('id')
+                    .eq('id', 1)
+                    .eq('admin_pass', inputPass)
+                    .single();
+
+                if (data) {
+                    sessionStorage.setItem('xinpay_admin_auth', 'true');
+                    sessionStorage.setItem('xinpay_admin_raw', inputPass);
+                    loginError.style.display = 'none';
+                    checkAuth();
+                } else {
+                    loginError.style.display = 'block';
+                }
+            });
+
+            async function loadRates() {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('app_config')
+                        .select('*')
+                        .eq('id', 1)
+                        .single();
+
+                    if (data) {
+                        rate1Input.value = data.rate1 || 'Rate : 105rs CDM';
+                        rate2Input.value = data.rate2 || '110rs IMPS & UPI';
+                        rate3Input.value = data.rate3 || '115rs UPI & IMPS (GAMING FUND)';
+                        addrBep20Input.value = data.bep20 || '0x851b9F760E98A2eE860699CB625C0921EDc3243D';
+                        addrTrc20Input.value = data.trc20 || 'TMYaeAdabrTJuMVhUZScfRGfyo774uNs2A';
+
+                        if (data.chat_toast) toastMessageInput.value = data.chat_toast;
+                        if (data.chat_toast_timer) toastDurationInput.value = data.chat_toast_timer;
+                    }
+                } catch (e) {
+                    console.error("Supabase load error", e);
+                }
+            }
+
+            saveBtn.addEventListener('click', async () => {
+                const updateData = {
+                    rate1: rate1Input.value,
+                    rate2: rate2Input.value,
+                    rate3: rate3Input.value,
+                    bep20: addrBep20Input.value,
+                    trc20: addrTrc20Input.value
+                };
+
+                const { data, error } = await supabaseClient
+                    .from('app_config')
+                    .update(updateData)
+                    .eq('id', 1);
+
+                if (!error) {
+                    saveSuccess.style.display = 'block';
+                    setTimeout(() => {
+                        saveSuccess.style.display = 'none';
+                    }, 3000);
+                } else {
+                    alert("Error saving settings to Supabase: " + error.message);
+                }
+            });
+
+            saveChatBtn.addEventListener('click', async () => {
+                const updateData = {
+                    chat_toast: toastMessageInput.value,
+                    chat_toast_timer: parseInt(toastDurationInput.value) || 10
+                };
+
+                const { error } = await supabaseClient.from('app_config').update(updateData).eq('id', 1);
+
+                if (!error) {
+                    saveChatSuccess.style.display = 'block';
+                    setTimeout(() => saveChatSuccess.style.display = 'none', 3000);
+                } else {
+                    alert('Error saving chat config: ' + error.message);
+                }
+            });
+
+            checkAuth();
+        });
+    </script>
+</body>
+
+</html>

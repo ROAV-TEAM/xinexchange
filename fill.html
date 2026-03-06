@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XINPAY · Fill Details</title>
+    <meta name="description" content="XINPAY - Fill Payment Details">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fill.css">
+</head>
+
+<body>
+    <!-- Aurora Background -->
+    <div class="aurora-bg">
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+    </div>
+    <div class="noise-overlay"></div>
+
+    <div id="mainApp" class="main-app visible"
+        style="display: flex; flex-direction: column; width: 100%; max-width: 500px; padding: 1rem; margin: 0 auto; z-index: 10;">
+        <a href="index.html" class="back-link"
+            style="margin-bottom: 1rem; color: var(--text-muted); text-decoration: none;"><i
+                class="fas fa-arrow-left"></i> back to home</a>
+
+        <div class="order-card liquid-glass"
+            style="padding: 1.5rem; border-radius: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+
+            <div class="header-row" style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                <i class="fas fa-bolt brand-icon" style="color: #a855f7; margin-right: 8px;"></i>
+                <span class="brand" style="font-weight: 800; font-size: 1.2rem;">XINPAY</span>
+                <div class="badge"
+                    style="margin-left: auto; background: rgba(168, 85, 247, 0.15); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; color: #c084fc;">
+                    <span class="live-dot"
+                        style="display: inline-block; width: 6px; height: 6px; background: #c084fc; border-radius: 50%; margin-right: 4px;"></span>
+                    Payment Info
+                </div>
+            </div>
+
+            <!-- Rate Selection -->
+            <div class="form-group">
+                <label class="field-label"><i class="fas fa-tags"></i> Select Rate & Option</label>
+                <select id="rateSelect" class="custom-select liquid-glass">
+                    <option value="" disabled selected>Please select an option</option>
+                    <option value="1">Rate : 105rs CDM</option>
+                    <option value="2">110rs IMPS & UPI</option>
+                    <option value="3">115rs UPI & IMPS (GAMING FUND)</option>
+                </select>
+            </div>
+
+            <!-- Payment Method Selection -->
+            <div id="methodSection" class="form-group" style="display: none; margin-top: 1.5rem;">
+                <label class="field-label"><i class="fas fa-money-check-alt"></i> Select Payment Method</label>
+                <div class="method-options">
+                    <div class="method-card" data-method="cdm">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3141/3141753.png" alt="CDM"
+                            class="method-logo">
+                        <span>CDM</span>
+                    </div>
+                    <div class="method-card" data-method="imps">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png" alt="IMPS"
+                            class="method-logo">
+                        <span>IMPS</span>
+                    </div>
+                    <div class="method-card" data-method="upi">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI"
+                            class="method-logo" style="width: 48px;">
+                        <span>UPI</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Form -->
+            <div id="detailsForm" style="display: none; margin-top: 1.5rem;">
+                <!-- Bank Form -->
+                <div id="bankFields" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="field-label"><i class="fas fa-user"></i> NAME</label>
+                        <input type="text" id="bankName" class="custom-input liquid-glass"
+                            placeholder="Enter Account Name" autocomplete="off">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="field-label"><i class="fas fa-hashtag"></i> ACCOUNT NUMBER</label>
+                        <input type="text" id="bankAccount" class="custom-input liquid-glass"
+                            placeholder="Enter Account Number" autocomplete="off">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="field-label"><i class="fas fa-university"></i> IFSC CODE</label>
+                        <input type="text" id="bankIfsc" class="custom-input liquid-glass" placeholder="Enter IFSC Code"
+                            autocomplete="off">
+                    </div>
+                </div>
+
+                <!-- UPI Form -->
+                <div id="upiFields" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="field-label"><i class="fas fa-user"></i> NAME</label>
+                        <input type="text" id="upiName" class="custom-input liquid-glass" placeholder="Enter Name"
+                            autocomplete="off">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="field-label"><i class="fab fa-google-pay"></i> ENTER YOUR UPI ID</label>
+                        <input type="text" id="upiId" class="custom-input liquid-glass" placeholder="example@upi"
+                            autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="button-group" style="margin-top: 2rem;">
+                    <button id="submitBtn" class="action-btn w-100"
+                        style="width: 100%; padding: 12px; background: linear-gradient(135deg, #a855f7, #ec4899); border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">
+                        Submit & Continue <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Supabase SDK & Configuration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_client.js"></script>
+
+    <script src="fill.js"></script>
+</body>
+
+</html>

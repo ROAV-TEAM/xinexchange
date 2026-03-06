@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat Admin - XINPAY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .split-dashboard {
+            display: flex;
+            height: 90vh;
+            max-width: 1000px;
+            margin: 2vh auto;
+            gap: 20px;
+        }
+
+        .session-list-card,
+        .chat-view-card {
+            background: rgba(10, 1, 24, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .session-list-card {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-view-card {
+            flex: 2;
+            position: relative;
+        }
+
+        .session-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+        }
+
+        .session-item:hover,
+        .session-item.active {
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .session-id {
+            font-size: 0.8rem;
+            color: #fff;
+            margin-bottom: 5px;
+            word-break: break-all;
+            opacity: 0.8;
+        }
+
+        .session-status {
+            font-size: 0.7rem;
+            color: #22c55e;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1rem;
+            padding-right: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .msg-admin {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-user {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .input-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .close-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(255, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+
+        .empty-placeholder {
+            margin: auto;
+            text-align: center;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aurora-bg">
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+    </div>
+    <div class="noise-overlay"></div>
+
+    <div class="split-dashboard">
+        <!-- Sessions List -->
+        <div class="session-list-card liquid-glass">
+            <h3 style="margin-bottom: 1rem; font-size:1.1rem; color:#a855f7;"><i class="fas fa-users"></i> Live Sessions
+            </h3>
+            <div id="sessionContainer">
+                <!-- Session items listed here -->
+            </div>
+            <a href="access.html" class="back-link" style="margin-top:auto; text-decoration:none;"><i
+                    class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <!-- Chat View Area -->
+        <div class="chat-view-card liquid-glass" id="chatViewArea" style="display:none;">
+            <div style="font-size:0.8rem; margin-bottom:1rem; opacity:0.8; word-break: break-all;"
+                id="activeSessionTitle">
+                Session: <span id="sessIdText"></span>
+            </div>
+
+            <div class="chat-messages" id="chatArea">
+                <!-- Current msgs here -->
+            </div>
+
+            <div class="chat-controls">
+                <div class="input-bar">
+                    <input type="text" id="adminMsgInput" class="custom-input liquid-glass"
+                        placeholder="Type reply as Admin..." style="flex:1;">
+                    <button id="sendAdminBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+
+                <div class="close-bar">
+                    <input type="text" id="closeReasonInput" class="custom-input liquid-glass"
+                        placeholder="Close Message (e.g., Order Complete!)"
+                        style="flex:1; border-color: rgba(239, 68, 68, 0.4);">
+                    <button id="closeSessionBtn" class="action-btn"
+                        style="background: linear-gradient(135deg, #ef4444, #dc2626); border-color:#ef4444;"><i
+                            class="fas fa-times-circle"></i> Close Chat</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-view-card liquid-glass" id="noSessionPlaceholder">
+            <div class="empty-placeholder">
+                <i class="fas fa-comment-slash" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Select a session to start chatting or closing orders.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK & Configuration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_client.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Protect page
+            if (sessionStorage.getItem('xinpay_admin_auth') !== 'true') {
+                window.location.href = 'access.html';
+                return;
+            }
+
+            const sessionContainer = document.getElementById('sessionContainer');
+            const chatViewArea = document.getElementById('chatViewArea');
+            const noSessionPlaceholder = document.getElementById('noSessionPlaceholder');
+            const sessIdText = document.getElementById('sessIdText');
+            const chatArea = document.getElementById('chatArea');
+            const adminMsgInput = document.getElementById('adminMsgInput');
+            const sendAdminBtn = document.getElementById('sendAdminBtn');
+            const closeReasonInput = document.getElementById('closeReasonInput');
+            const closeSessionBtn = document.getElementById('closeSessionBtn');
+
+            let currentActiveSession = null;
+            let pollingInterval = null;
+
+            async function loadSessions() {
+                const { data, error } = await supabaseClient
+                    .from('chat_sessions')
+                    .select('*')
+                    .eq('status', 'open')
+                    .order('created_at', { ascending: false });
+
+                if (data && data.length > 0) {
+                    sessionContainer.innerHTML = '';
+                    data.forEach(sess => {
+                        const sDiv = document.createElement('div');
+                        sDiv.className = `session-item ${currentActiveSession === sess.id ? 'active' : ''}`;
+                        sDiv.innerHTML = `
+                            <div class="session-id">${sess.id}</div>
+                            <div class="session-status">OPEN • Wait...</div>
+                        `;
+                        sDiv.onclick = () => activateSession(sess.id);
+                        sessionContainer.appendChild(sDiv);
+                    });
+                } else {
+                    sessionContainer.innerHTML = '<div style="font-size:0.8rem;opacity:0.6;">No open sessions.</div>';
+                }
+            }
+
+            // Sync sessions
+            setInterval(loadSessions, 5000);
+            loadSessions();
+
+            function activateSession(id) {
+                currentActiveSession = id;
+                sessIdText.innerText = id;
+                chatViewArea.style.display = 'flex';
+                noSessionPlaceholder.style.display = 'none';
+
+                loadSessions(); // Update UI active highlight
+
+                if (pollingInterval) clearInterval(pollingInterval);
+                fetchMessages();
+                pollingInterval = setInterval(fetchMessages, 3000);
+            }
+
+            let lastCount = 0;
+            async function fetchMessages() {
+                if (!currentActiveSession) return;
+
+                const { data, error } = await supabaseClient
+                    .from('chat_messages')
+                    .select('*')
+                    .eq('session_id', currentActiveSession)
+                    .order('created_at', { ascending: true });
+
+                if (data && data.length > 0) {
+                    chatArea.innerHTML = '';
+                    data.forEach(msg => {
+                        const el = document.createElement('div');
+                        el.className = `message ${msg.sender === 'admin' ? 'msg-admin' : 'msg-user'}`;
+                        const d = new Date(msg.created_at);
+                        const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+                        el.innerHTML = `${msg.message} <div style="font-size:0.65rem;opacity:0.7;text-align:right;margin-top:4px;">${timeStr}</div>`;
+                        chatArea.appendChild(el);
+                    });
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    lastCount = data.length;
+                } else if (data && data.length === 0) {
+                    chatArea.innerHTML = '<div style="text-align:center;font-size:0.8rem;color:var(--text-muted);width:100%;">No messages yet</div>';
+                }
+            }
+
+            async function sendReply() {
+                const text = adminMsgInput.value.trim();
+                if (!text || !currentActiveSession) return;
+
+                adminMsgInput.value = '';
+                adminMsgInput.focus();
+
+                await supabaseClient
+                    .from('chat_messages')
+                    .insert([{ session_id: currentActiveSession, sender: 'admin', message: text }]);
+
+                fetchMessages();
+            }
+
+            sendAdminBtn.addEventListener('click', sendReply);
+            adminMsgInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendReply();
+            });
+
+            closeSessionBtn.addEventListener('click', async () => {
+                if (!currentActiveSession) return;
+
+                const msg = closeReasonInput.value.trim() || 'Admin has verified and closed your order. Thanks!';
+
+                await supabaseClient
+                    .from('chat_sessions')
+                    .update({ status: 'closed', close_message: msg })
+                    .eq('id', currentActiveSession);
+
+                closeReasonInput.value = '';
+                currentActiveSession = null;
+                chatViewArea.style.display = 'none';
+                noSessionPlaceholder.style.display = 'flex';
+
+                if (pollingInterval) clearInterval(pollingInterval);
+                loadSessions();
+            });
+        });
+    </script>
+</body>
+
+</html>

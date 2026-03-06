@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat Support - XINPAY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .chat-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            background: rgba(10, 1, 24, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: var(--radius-md);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .chat-header h3 {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .chat-header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .chat-toast {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.2));
+            color: #fff;
+            padding: 0.8rem;
+            font-size: 0.85rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+            display: none;
+            transition: all 0.3s;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .msg-user {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-admin {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-time {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-overlay.hidden {
+            display: none;
+        }
+
+        .popup-box {
+            background: rgba(10, 1, 24, 0.95);
+            padding: 2rem;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: var(--radius-md);
+            text-align: center;
+            max-width: 320px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aurora-bg">
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+        <div class="aurora-blob"></div>
+    </div>
+    <div class="noise-overlay"></div>
+
+    <div class="chat-container liquid-glass" id="chatContainer">
+        <div class="chat-header">
+            <h3>Support Chat</h3>
+            <p>Admin will verify your payment details shortly</p>
+        </div>
+
+        <div id="chatToast" class="chat-toast"></div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div style="text-align:center; font-size:0.8rem; color:var(--text-muted); width:100%; margin-bottom:1rem;">
+                Chat session started
+            </div>
+        </div>
+
+        <div class="chat-input" id="chatInputArea">
+            <input type="text" id="msgInput" placeholder="Type a message..." class="custom-input liquid-glass"
+                autocomplete="off">
+            <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Closed Chat Popup -->
+    <div id="closedPopup" class="popup-overlay hidden">
+        <div class="popup-box liquid-glass">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: #22c55e; margin-bottom: 1rem;"></i>
+            <h2>Chat Closed</h2>
+            <p id="closeReasonText"
+                style="color: var(--text-muted); font-size: 0.9rem; margin-top:10px; margin-bottom: 15px;">Your order
+                has been verified completely.</p>
+            <a href="index.html" class="action-btn w-100" style="text-decoration: none; display:block;">Return to
+                Home</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_client.js"></script>
+    <script src="wait.js"></script>
+</body>
+
+</html>
