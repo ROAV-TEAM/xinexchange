@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xinpay · 访问被阻止</title>
+  <!-- Font Awesome for clean icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Font: Poppins for modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at 10% 30%, #1b2b3f, #0c121c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* floating glass orbs for liquid质感 */
+    .orb {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(110, 190, 255, 0.15);
+      filter: blur(70px);
+      z-index: 0;
+    }
+    .orb-1 {
+      top: -80px;
+      left: -80px;
+      background: rgba(0, 255, 200, 0.12);
+    }
+    .orb-2 {
+      bottom: -100px;
+      right: -50px;
+      background: rgba(180, 130, 255, 0.18);
+      width: 350px;
+      height: 350px;
+    }
+    .orb-3 {
+      top: 40%;
+      right: 20%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 215, 100, 0.08);
+      filter: blur(90px);
+    }
+
+    /* main glass container */
+    .glass-card {
+      position: relative;
+      z-index: 10;
+      max-width: 600px;
+      width: 100%;
+      background: rgba(20, 30, 45, 0.35);
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px) saturate(180%);
+      border-radius: 42px;
+      padding: 2.8rem 2.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.2);
+      color: #fff;
+      transition: transform 0.25s ease;
+    }
+
+    .glass-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 40px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    /* header with icon and title */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 1.2rem;
+    }
+
+    .lock-icon {
+      font-size: 3rem;
+      color: rgba(255, 100, 100, 0.9);
+      filter: drop-shadow(0 0 10px rgba(255, 80, 80, 0.5));
+    }
+
+    .title-section h1 {
+      font-weight: 600;
+      font-size: 2rem;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .title-section .sub {
+      font-weight: 300;
+      font-size: 1rem;
+      opacity: 0.8;
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 4px;
+    }
+
+    .title-section .sub span {
+      background: rgba(255,255,255,0.08);
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.8rem;
+    }
+
+    /* message blocks */
+    .message-block {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 28px;
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 1.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    .lang-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background: rgba(255,255,255,0.1);
+      padding: 0.25rem 1.1rem;
+      border-radius: 40px;
+      margin-bottom: 0.8rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #ccddee;
+    }
+
+    .message-text {
+      font-size: 1.2rem;
+      font-weight: 400;
+      line-height: 1.6;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .chinese .message-text {
+      font-size: 1.25rem;
+      font-weight: 350;
+      letter-spacing: 0.02em;
+    }
+
+    /* additional footer info */
+    .footer-info {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.9rem;
+      color: rgba(220, 235, 255, 0.8);
+    }
+
+    .support {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .support-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .support-item i {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+
+    .ref-id {
+      font-family: monospace;
+      background: rgba(0,0,0,0.3);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      border: 1px solid rgba(255,255,240,0.15);
+      font-size: 0.8rem;
+    }
+
+    /* tiny additional note for multiple tries */
+    .hint {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      background: rgba(220, 70, 70, 0.2);
+      padding: 0.8rem 1.5rem;
+      border-radius: 60px;
+      border: 1px solid rgba(255, 160, 160, 0.2);
+    }
+
+    .hint i {
+      color: #ff9f9f;
+    }
+
+    /* responsive */
+    @media (max-width: 480px) {
+      .glass-card {
+        padding: 2rem 1.2rem;
+      }
+      .title-section h1 {
+        font-size: 1.7rem;
+      }
+      .message-text {
+        font-size: 1rem;
+      }
+      .chinese .message-text {
+        font-size: 1.1rem;
+      }
+      .footer-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+    }
+
+    /* subtle glow on text */
+    p, h1, .lang-label {
+      text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- background liquid orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="glass-card">
+    <!-- header with lock and xinpay -->
+    <div class="header">
+      <i class="fas fa-lock lock-icon"></i>
+      <div class="title-section">
+        <h1>⛔ blocked / 已阻止</h1>
+        <div class="sub">
+          <span><i class="far fa-shield" style="margin-right: 6px;"></i>Xinpay system</span>
+          <span>IP security</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENGLISH message block -->
+    <div class="message-block english">
+      <div class="lang-label">
+        <i class="fas fa-globe" style="margin-right: 8px;"></i>ENGLISH
+      </div>
+      <div class="message-text">
+        <strong>You have been blocked by Xinpay System.</strong><br>
+        Due to <u>multiple failed attempts</u> from your IP,<br>
+        excessive tries triggered an automatic security block.
+      </div>
+    </div>
+
+    <!-- CHINESE message block -->
+    <div class="message-block chinese">
+      <div class="lang-label">
+        <i class="fas fa-language" style="margin-right: 8px;"></i>中文
+      </div>
+      <div class="message-text">
+        <strong>您已被Xinpay系统封禁。</strong><br>
+        由于您的ID检测到<span style="border-bottom: 1px dotted rgba(255,255,255,0.5);">多次尝试失败</span>，<br>
+        因尝试次数过多，系统已暂时阻止访问。
+      </div>
+    </div>
+
+    <!-- extra hint about multiple tries (both languages) -->
+    <div class="hint">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>⚠️ multiple tries / 多次尝试 — temporary block for security</span>
+    </div>
+
+    <!-- footer with support and ref -->
+    <div class="footer-info">
+      <div class="support">
+        <div class="support-item">
+          <i class="far fa-envelope"></i>
+          <span>support@xinpay.security</span>
+        </div>
+        <div class="support-item">
+          <i class="fas fa-headset"></i>
+          <span>+86 400 8827 552</span>
+        </div>
+      </div>
+      <div class="ref-id">
+        <i class="far fa-id-card" style="margin-right: 6px;"></i> REF: XIN‑BLK‑934A
+      </div>
+    </div>
+
+    <!-- tiny footnote in both languages (liquid subtle) -->
+    <div style="margin-top: 1.2rem; font-size: 0.7rem; text-align: center; opacity: 0.5; letter-spacing: 1px;">
+      <span>blocked due to multiple attempts · 由于多次尝试已被封锁</span>
+    </div>
+  </div>
+</body>
+</html>
