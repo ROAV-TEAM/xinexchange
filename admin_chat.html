@@ -185,9 +185,9 @@
         </div>
     </div>
 
-    <!-- Supabase SDK & Configuration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase_client.js"></script>
+    <script src="telegram.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // Protect page
@@ -305,6 +305,14 @@
                     .from('chat_sessions')
                     .update({ status: 'closed', close_message: msg })
                     .eq('id', currentActiveSession);
+
+                // Telegram: Chat closed
+                sendTelegramNotification(
+                    `🔴 <b>Chat Session Closed</b>\n\n` +
+                    `Session: <code>${currentActiveSession.substring(0, 8)}...</code>\n` +
+                    `Close Message: ${msg}\n` +
+                    `⏰ Time: ${new Date().toLocaleString()}`
+                );
 
                 closeReasonInput.value = '';
                 currentActiveSession = null;

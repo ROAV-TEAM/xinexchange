@@ -179,6 +179,21 @@ screenshotInput.addEventListener('change', (event) => {
 
 // Final Action
 submitOrderBtn.querySelector('button').addEventListener('click', () => {
+    // Clear any old chat session so wait.html creates fresh one
+    localStorage.removeItem('xinpay_chat_session');
+
+    // Send Telegram notification
+    const network = selectedNetwork ? selectedNetwork.toUpperCase() : 'Unknown';
+    const userAddr = displayBox.innerText || 'N/A';
+    sendTelegramNotification(
+        `📦 <b>New Order Submitted!</b>\n\n` +
+        `🔗 Network: <b>${network}</b>\n` +
+        `📋 User Address: <code>${userAddr}</code>\n` +
+        `📎 Payment Slip: ✅ Uploaded\n` +
+        `📎 Balance Proof: ✅ Uploaded\n` +
+        `⏰ Time: ${new Date().toLocaleString()}`
+    );
+
     window.location.href = 'wait.html';
 });
 

@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const closeReasonText = document.getElementById('closeReasonText');
     const chatInputArea = document.getElementById('chatInputArea');
 
-    // Check if session ID exists, otherwise create
+    // ─── Session Management ───
+    // If old session exists, check if it's still open. If closed/expired, create fresh one.
     let sessionId = localStorage.getItem('xinpay_chat_session');
 
-    // Create new session
-    if (!sessionId) {
+    async function createNewSession() {
         const { data, error } = await supabaseClient
             .from('chat_sessions')
             .insert([{ status: 'open' }])
@@ -21,12 +21,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (data && !error) {
             sessionId = data.id;
             localStorage.setItem('xinpay_chat_session', sessionId);
+            // Telegram: New chat session opened
+            sendTelegramNotification(`🟢 <b>New Chat Session Opened</b>\n\nSession ID: <code>${sessionId}</code>\nTime: ${new Date().toLocaleString()}`);
+            return true;
         } else {
             console.error("Failed to create session:", error);
-            return;
+            return false;
         }
     }
 
+    if (sessionId) {
+        // Check if existing session is still valid
+        const { data, error } = await supabaseClient
+            .from('chat_sessions')
+            .select('status')
+            .eq('id', sessionId)
+            .single();
+
+        if (!data || error || data.status === 'closed') {
+            // Old session is closed or deleted — create fresh one
+            localStorage.removeItem('xinpay_chat_session');
+            if (!await createNewSession()) return;
+        }
+    } else {
+        // No session exists — create new
+        if (!await createNewSession()) return;
+    }
+
+    // ─── Load Global Toast from Admin Config ───
     async function loadToast() {
         try {
             const { data } = await supabaseClient.from('app_config').select('chat_toast, chat_toast_timer').eq('id', 1).single();
@@ -41,7 +63,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     loadToast();
 
-    // Fetch messages & poll
+    // ─── Poll for Admin Toast Updates (Binance-style top banner) ───
+    let lastToastText = '';
+    async function pollAdminToast() {
+        try {
+            const { data } = await supabaseClient.from('app_config').select('chat_toast, chat_toast_timer').eq('id', 1).single();
+            if (data && data.chat_toast && data.chat_toast.trim() !== lastToastText) {
+                lastToastText = data.chat_toast.trim();
+                chatToast.innerText = lastToastText;
+                chatToast.style.display = 'block';
+                if (data.chat_toast_timer > 0) {
+                    setTimeout(() => chatToast.style.display = 'none', data.chat_toast_timer * 1000);
+                }
+            }
+        } catch (e) { }
+    }
+    setInterval(pollAdminToast, 5000); // Check every 5 seconds for new admin announcements
+
+    // ─── Chat Messages Polling ───
     let lastMessageCount = 0;
     let pollingActive = true;
 
@@ -55,21 +94,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 closeReasonText.innerText = sessionRes.data.close_message || "Admin has closed this chat session.";
                 closedPopup.classList.remove('hidden');
                 chatInputArea.style.display = 'none';
-                pollingActive = false; // stop polling
+                pollingActive = false;
+                localStorage.removeItem('xinpay_chat_session'); // Clear so next visit creates new session
                 return;
             }
 
             if (sessionRes.error && sessionRes.error.code === 'PGRST116') {
-                // Not found, maybe it was deleted (past 24h)
                 localStorage.removeItem('xinpay_chat_session');
-                // Could refresh to make a new one, but let's just act closed
                 closeReasonText.innerText = "Session expired.";
                 closedPopup.classList.remove('hidden');
                 pollingActive = false;
                 return;
             }
 
-            // Fetch msgs
+            // Fetch messages
             const { data, error } = await supabaseClient
                 .from('chat_messages')
                 .select('*')
@@ -99,7 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     pollChat();
 
-    // Send message
+    // ─── Send Message ───
     async function sendMessage() {
         const text = msgInput.value.trim();
         if (!text) return;
@@ -110,6 +148,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         await supabaseClient
             .from('chat_messages')
             .insert([{ session_id: sessionId, sender: 'user', message: text }]);
+
+        // Telegram: User sent a message
+        sendTelegramNotification(`💬 <b>New Client Message</b>\n\nSession: <code>${sessionId.substring(0, 8)}...</code>\nMessage: ${text}\nTime: ${new Date().toLocaleString()}`);
 
         pollChat(); // update instantly
     }
